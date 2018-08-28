@@ -1,0 +1,40 @@
+language: julia
+os:
+  - linux
+julia:
+  - 0.6
+notifications:
+  email: false
+git:
+  depth: 99999999
+cache:
+  timeout: 1000
+  directories:
+    - downloads
+env:
+  global:
+    - BINARYBUILDER_DOWNLOADS_CACHE=downloads
+    - BINARYBUILDER_AUTOMATIC_APPLE=false
+sudo: required
+
+# Before anything else, get the latest versions of things
+before_script:
+  - julia -e 'Pkg.clone("https://github.com/JuliaPackaging/BinaryProvider.jl")'
+  - julia -e 'Pkg.clone("https://github.com/JuliaPackaging/BinaryBuilder.jl"); Pkg.build()'
+
+script:
+  - julia build_tarballs.jl
+
+
+deploy:
+    provider: releases
+    api_key:
+        # Note; this api_key is only valid for juan-pablo-vielma/IpoptBuilder; you need
+        # to make your own: https://docs.travis-ci.com/user/deployment/releases/
+        secure: K1OuT+6yu75lvwte0fny2h0eoR9LZbQfrzm0RJoMk0zFmFh6+56RhzCWS0Fad0ckoVSsMkIrb1J18mRHa1jWnvGRi6Ex70SoyygDUpeqFWPcREaXLu9apj2h/Gsl9EFiK6Icb7X25I6qqXfQ1sJhgI8kPr2R3WQZW5B5GFI/i5Bz6TV941BU4NEmLgLsQWq7PQ8P5/uAZGn/MW7DrnbHStke2lnvj+NxJLDtpkWGIiRMekmC4gbv8+TiV0AB2LcTzfXXwYNmN485LWxJJPixQOvKaVBWW7/sGi2GrsI+MhVGpFOCU3nNW/HMrGVxS5LPmAoCBlzqGzl+82gVUL0hLwUU5LQK0j783VS7uv4BASgDZltpzGgGLK65FDdIagDsPI+ohTGK1NwHVrD2sKO0/V9AEJK6Su38Rt42m7B0koA/8gZa4aWwUAHCkKEOwYLzPh13ZJmX1BjBw2m1dzMr13OBB3ynns3afBfGLz4NSM7vaC2ywOpIzCC/1h52s5w7ubanQpt2HS9xvYFL188EBcq5wyqyG1n4ebtqVpk+swDUuC7PzIi0cC1DhPyFXw7PmtbzVPU/dw965a26UWstUt9I/XGY9kasz8YghhOD4p+Rlx9HzXy1mlL6wfv8K+IwZNIjJTTyVqUnJ/naz5FkSht0xZxRHlSIo38lm3XqSnk=
+    file_glob: true
+    file: products/*
+    skip_cleanup: true
+    on:
+        repo: juan-pablo-vielma/IpoptBuilder
+        tags: true
