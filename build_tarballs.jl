@@ -20,7 +20,34 @@ update_configure_scripts
 mkdir build
 cd build/
 export CPPFLAGS="-DCOIN_USE_MUMPS_MPI_H"
-../configure --prefix=$prefix --with-pic --disable-pkg-config --host=${target} --enable-shared --enable-static --enable-dependency-linking lt_cv_deplibs_check_method=pass_all --with-asl-lib="-L${prefix}/lib -lasl" --with-asl-incdir="$prefix/include/asl" --with-blas="-L${prefix}/lib -lcoinblas -lgfortran" --with-lapack="-L${prefix}/lib -lcoinlapack" --with-metis-lib="-L${prefix}/lib -lcoinmetis" --with-metis-incdir="$prefix/include/coin/ThirdParty" --with-mumps-lib="-L${prefix}/lib -lcoinmumps" --with-mumps-incdir="$prefix/include/coin/ThirdParty" 
+
+## STATIC BUILD START
+# Staticly link all dependencies and export only Clp symbols
+
+# force only exporting symbols related to Clp
+sed -i~ -e 's|LT_LDFLAGS="-no-undefined"|LT_LDFLAGS="-no-undefined -export-symbols-regex \\"Clp\\""|g' ../configure
+sed -i~ -e 's|LT_LDFLAGS="-no-undefined"|LT_LDFLAGS="-no-undefined -export-symbols-regex \\"Clp\\""|g' ../Clp/configure
+
+../configure --prefix=$prefix --with-pic --disable-pkg-config --host=${target} --enable-shared --enable-static \
+--enable-dependency-linking lt_cv_deplibs_check_method=pass_all \
+--with-asl-lib="-L${prefix}/lib -lasl" --with-asl-incdir="$prefix/include/asl" \
+--with-blas="-L${prefix}/lib -lcoinblas -lgfortran" \
+--with-lapack="-L${prefix}/lib -lcoinlapack" \
+--with-metis-lib="-L${prefix}/lib -lcoinmetis" --with-metis-incdir="$prefix/include/coin/ThirdParty" \
+--with-mumps-lib="-L${prefix}/lib -lcoinmumps" --with-mumps-incdir="$prefix/include/coin/ThirdParty" 
+
+## STATIC BUILD END
+
+## DYNAMIC BUILD START
+#../configure --prefix=$prefix --with-pic --disable-pkg-config --host=${target} --enable-shared --enable-static \
+#--enable-dependency-linking lt_cv_deplibs_check_method=pass_all \
+#--with-asl-lib="-L${prefix}/lib -lasl" --with-asl-incdir="$prefix/include/asl" \
+#--with-blas="-L${prefix}/lib -lcoinblas -lgfortran" \
+#--with-lapack="-L${prefix}/lib -lcoinlapack" \
+#--with-metis-lib="-L${prefix}/lib -lcoinmetis" --with-metis-incdir="$prefix/include/coin/ThirdParty" \
+#--with-mumps-lib="-L${prefix}/lib -lcoinmumps" --with-mumps-incdir="$prefix/include/coin/ThirdParty" 
+## DYNAMIC BUILD END
+
 make -j${nproc}
 make install
 
@@ -29,14 +56,19 @@ make install
 # These are the platforms we will build for by default, unless further
 # platforms are passed in on the command line
 platforms = [
-    Linux(:i686, :glibc),
-    Linux(:x86_64, :glibc),
-    Linux(:aarch64, :glibc),
-    Linux(:armv7l, :glibc, :eabihf),
+    Linux(:i686, libc=:glibc),
+    Linux(:x86_64, libc=:glibc),
+    Linux(:aarch64, libc=:glibc),
+    Linux(:armv7l, libc=:glibc, call_abi=:eabihf),
     MacOS(:x86_64),
     Windows(:i686),
     Windows(:x86_64)
 ]
+platforms = expand_gcc_versions(platforms)
+# To fix gcc4 bug in Windows
+platforms = setdiff(platforms, [Windows(:x86_64, compiler_abi=CompilerABI(:gcc4)), Windows(:i686, compiler_abi=CompilerABI(:gcc4))])
+push!(platforms, Windows(:i686,compiler_abi=CompilerABI(:gcc6)))
+push!(platforms, Windows(:x86_64,compiler_abi=CompilerABI(:gcc6)))
 
 # The products that we will ensure are always built
 products(prefix) = [
@@ -46,11 +78,11 @@ products(prefix) = [
 
 # Dependencies that must be installed before this package can be built
 dependencies = [
-    "https://github.com/juan-pablo-vielma/ASLBuilder/releases/download/v3.1.0/build_ASLBuilder.v3.1.0.jl",
-    "https://github.com/juan-pablo-vielma/COINBLASBuilder/releases/download/v1.4.6/build_COINBLASBuilder.v1.4.6.jl",
-    "https://github.com/juan-pablo-vielma/COINLapackBuilder/releases/download/v1.5.6/build_COINLapackBuilder.v1.5.6.jl",
-    "https://github.com/juan-pablo-vielma/COINMetisBuilder/releases/download/v1.3.5/build_COINMetisBuilder.v1.3.5.jl",
-    "https://github.com/juan-pablo-vielma/COINMumpsBuilder/releases/download/v1.6.0/build_COINMumpsBuilder.v1.6.0.jl"
+    "https://github.com/juan-pablo-vielma/ASLBuilder/releases/download/v3.1.0-1-static/build_ASLBuilder.v3.1.0.jl",
+    "https://github.com/juan-pablo-vielma/COINBLASBuilder/releases/download/v1.4.6-static/build_COINBLASBuilder.v1.4.6.jl",
+    "https://github.com/juan-pablo-vielma/COINLapackBuilder/releases/download/v1.5.6-static/build_COINLapackBuilder.v1.5.6.jl",
+    "https://github.com/juan-pablo-vielma/COINMetisBuilder/releases/download/v1.3.5-static/build_COINMetisBuilder.v1.3.5.jl",
+    "https://github.com/juan-pablo-vielma/COINMumpsBuilder/releases/download/v1.6.0-static/build_COINMumpsBuilder.v1.6.0.jl"
 ]
 
 # Build the tarballs, and possibly a `build.jl` as well.
