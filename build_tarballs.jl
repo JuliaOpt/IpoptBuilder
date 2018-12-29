@@ -19,6 +19,15 @@ cd Ipopt-releases-3.12.10/
 update_configure_scripts
 mkdir build
 cd build/
+
+for path in ${LD_LIBRARY_PATH//:/ }; do
+    for file in $(ls $path/*.la); do
+        echo "$file"
+        baddir=$(sed -n "s|libdir=||p" $file)
+        sed -i~ -e "s|$baddir|'$path'|g" $file
+    done
+done
+
 export CPPFLAGS="-DCOIN_USE_MUMPS_MPI_H"
 
 ## STATIC BUILD START
