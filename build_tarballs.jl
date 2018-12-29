@@ -22,11 +22,11 @@ cd build/
 export CPPFLAGS="-DCOIN_USE_MUMPS_MPI_H"
 
 ## STATIC BUILD START
-# Staticly link all dependencies and export only Clp symbols
+# Staticly link all dependencies and export only Ipopt symbols
 
-# force only exporting symbols related to Clp
-sed -i~ -e 's|LT_LDFLAGS="-no-undefined"|LT_LDFLAGS="-no-undefined -export-symbols-regex \\"Clp\\""|g' ../configure
-sed -i~ -e 's|LT_LDFLAGS="-no-undefined"|LT_LDFLAGS="-no-undefined -export-symbols-regex \\"Clp\\""|g' ../Clp/configure
+# force only exporting symbols related to Ipopt
+sed -i~ -e 's|LT_LDFLAGS="-no-undefined"|LT_LDFLAGS="-no-undefined -export-symbols-regex \\"Ipopt\\""|g' ../configure
+sed -i~ -e 's|LT_LDFLAGS="-no-undefined"|LT_LDFLAGS="-no-undefined -export-symbols-regex \\"Ipopt\\""|g' ../Ipopt/configure
 
 ../configure --prefix=$prefix --with-pic --disable-pkg-config --host=${target} --enable-shared --enable-static \
 --enable-dependency-linking lt_cv_deplibs_check_method=pass_all \
