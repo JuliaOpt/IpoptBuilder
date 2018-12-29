@@ -28,6 +28,11 @@ for path in ${LD_LIBRARY_PATH//:/ }; do
     done
 done
 
+if [ $target = "x86_64-apple-darwin14" ]; then
+  # seems static linking requires apple's ar
+  export AR=/opt/x86_64-apple-darwin14/bin/x86_64-apple-darwin14-ar
+fi
+
 export CPPFLAGS="-DCOIN_USE_MUMPS_MPI_H"
 
 ## STATIC BUILD START
