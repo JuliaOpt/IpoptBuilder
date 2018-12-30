@@ -31,6 +31,10 @@ done
 if [ $target = "x86_64-apple-darwin14" ]; then
   # seems static linking requires apple's ar
   export AR=/opt/x86_64-apple-darwin14/bin/x86_64-apple-darwin14-ar
+
+   # Ignore the "# Don't fix this by using the ld -exported_symbols_list flag, it doesn't exist in older darwin lds"
+  # seems to work for the current version and otherwise a long list of non-Clp symbols are exported
+  sed -i~ -e "s|~nmedit -s \$output_objdir/\${libname}-symbols.expsym \${lib}| -exported_symbols_list \$output_objdir/\${libname}-symbols.expsym|g" ../configure
 fi
 
 export CPPFLAGS="-DCOIN_USE_MUMPS_MPI_H"
