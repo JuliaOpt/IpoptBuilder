@@ -42,13 +42,13 @@ export CPPFLAGS="-DCOIN_USE_MUMPS_MPI_H"
 sed -i~ -e 's|LT_LDFLAGS="-no-undefined"|LT_LDFLAGS="-no-undefined -export-symbols-regex \\"Ipopt\\""|g' ../configure
 sed -i~ -e 's|LT_LDFLAGS="-no-undefined"|LT_LDFLAGS="-no-undefined -export-symbols-regex \\"Ipopt\\""|g' ../Ipopt/configure
 
-../configure --prefix=$prefix --with-pic --disable-pkg-config --host=${target} --enable-shared --enable-static \
+../configure --prefix=$prefix --with-pic --disable-pkg-config --host=${target} --enable-shared --disable-static \
 --enable-dependency-linking lt_cv_deplibs_check_method=pass_all \
 --with-asl-lib="-L${prefix}/lib -lasl" --with-asl-incdir="$prefix/include/asl" \
 --with-blas="-L${prefix}/lib -lcoinblas -lgfortran" \
 --with-lapack="-L${prefix}/lib -lcoinlapack" \
 --with-metis-lib="-L${prefix}/lib -lcoinmetis" --with-metis-incdir="$prefix/include/coin/ThirdParty" \
---with-mumps-lib="-L${prefix}/lib -lcoinmumps" --with-mumps-incdir="$prefix/include/coin/ThirdParty" 
+--with-mumps-lib="-L${prefix}/lib -lcoinmumps -lcoinmetis" --with-mumps-incdir="$prefix/include/coin/ThirdParty" 
 
 ## STATIC BUILD END
 
