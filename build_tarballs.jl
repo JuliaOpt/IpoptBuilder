@@ -84,7 +84,7 @@ platforms = [
 ]
 platforms = expand_gcc_versions(platforms)
 # To fix gcc4 bug in Windows
-platforms = setdiff(platforms, [Windows(:x86_64, compiler_abi=CompilerABI(:gcc4)), Windows(:i686, compiler_abi=CompilerABI(:gcc4))])
+#platforms = setdiff(platforms, [Windows(:x86_64, compiler_abi=CompilerABI(:gcc4)), Windows(:i686, compiler_abi=CompilerABI(:gcc4))])
 push!(platforms, Windows(:i686,compiler_abi=CompilerABI(:gcc6)))
 push!(platforms, Windows(:x86_64,compiler_abi=CompilerABI(:gcc6)))
 
