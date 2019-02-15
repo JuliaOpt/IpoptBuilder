@@ -43,8 +43,9 @@ export CPPFLAGS="-DCOIN_USE_MUMPS_MPI_H"
 # Staticly link all dependencies and export only Ipopt symbols
 
 # force only exporting symbols related to Ipopt
-sed -i~ -e 's|LT_LDFLAGS="-no-undefined"|LT_LDFLAGS="-no-undefined -export-symbols-regex \\"Ipopt\\""|g' ../configure
-sed -i~ -e 's|LT_LDFLAGS="-no-undefined"|LT_LDFLAGS="-no-undefined -export-symbols-regex \\"Ipopt\\""|g' ../Ipopt/configure
+# SetIntermediateCallback is to fix https://github.com/JuliaOpt/IpoptBuilder/issues/2
+sed -i~ -e 's|LT_LDFLAGS="-no-undefined"|LT_LDFLAGS="-no-undefined -export-symbols-regex \\\\"Ipopt\|SetIntermediateCallback\\\\""|g' ../configure
+sed -i~ -e 's|LT_LDFLAGS="-no-undefined"|LT_LDFLAGS="-no-undefined -export-symbols-regex \\\\"Ipopt\|SetIntermediateCallback\\\\""|g' ../Ipopt/configure
 
 ../configure --prefix=$prefix --with-pic --disable-pkg-config --host=${target} --enable-shared --disable-static \
 --enable-dependency-linking lt_cv_deplibs_check_method=pass_all \
@@ -52,7 +53,7 @@ sed -i~ -e 's|LT_LDFLAGS="-no-undefined"|LT_LDFLAGS="-no-undefined -export-symbo
 --with-blas="-L${prefix}/lib -lcoinblas -lgfortran" \
 --with-lapack="-L${prefix}/lib -lcoinlapack" \
 --with-metis-lib="-L${prefix}/lib -lcoinmetis" --with-metis-incdir="$prefix/include/coin/ThirdParty" \
---with-mumps-lib="-L${prefix}/lib -lcoinmumps -lcoinmetis" --with-mumps-incdir="$prefix/include/coin/ThirdParty" 
+--with-mumps-lib="-L${prefix}/lib -lcoinmumps -lcoinmetis" --with-mumps-incdir="$prefix/include/coin/ThirdParty"
 
 ## STATIC BUILD END
 
@@ -63,7 +64,7 @@ sed -i~ -e 's|LT_LDFLAGS="-no-undefined"|LT_LDFLAGS="-no-undefined -export-symbo
 #--with-blas="-L${prefix}/lib -lcoinblas -lgfortran" \
 #--with-lapack="-L${prefix}/lib -lcoinlapack" \
 #--with-metis-lib="-L${prefix}/lib -lcoinmetis" --with-metis-incdir="$prefix/include/coin/ThirdParty" \
-#--with-mumps-lib="-L${prefix}/lib -lcoinmumps" --with-mumps-incdir="$prefix/include/coin/ThirdParty" 
+#--with-mumps-lib="-L${prefix}/lib -lcoinmumps" --with-mumps-incdir="$prefix/include/coin/ThirdParty"
 ## DYNAMIC BUILD END
 
 make -j${nproc}
@@ -105,4 +106,3 @@ dependencies = [
 
 # Build the tarballs, and possibly a `build.jl` as well.
 build_tarballs(ARGS, name, version, sources, script, platforms, products, dependencies)
-
